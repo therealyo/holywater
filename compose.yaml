@@ -20,7 +20,6 @@ services:
       - '3000:3000'
 
   s3:
-    container_name: s3
     image: localstack/localstack:s3-latest
     ports:
       - '4566:4566'
@@ -46,7 +45,6 @@ services:
   dynamodb:
     command: '-jar DynamoDBLocal.jar -sharedDb -dbPath ./data'
     image: 'amazon/dynamodb-local:latest'
-    container_name: dynamodb-local
     ports:
       - '8000:8000'
     volumes:
