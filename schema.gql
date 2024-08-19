@@ -4,7 +4,7 @@
 
 type Content {
   """Primary id field for content"""
-  id: String!
+  id: ID!
 
   """Content Title"""
   title: String!
@@ -46,7 +46,7 @@ input CreateContentInput {
 scalar Upload
 
 input UpdateContentInput {
-  id: String!
+  id: ID!
 
   """Input for the content file."""
   content: Upload!
