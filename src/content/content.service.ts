@@ -5,11 +5,11 @@ import { ResetContentInput } from './dto/reset-content.input';
 
 @Injectable()
 export class ContentService {
-  create(createContentInput: CreateContentInput) {
-    console.log('createContentInput:', createContentInput);
-    return 'This action adds a new content';
-  }
+  constructor() {}
 
+  findMany(take: number, skip: number) {
+    return `This action returns content for take: ${take}, skip: ${skip}`;
+  }
   findVersions(title: string) {
     return `This action returns all verions for ${title}`;
   }
@@ -18,17 +18,18 @@ export class ContentService {
     return `This action returns a #${title} content, version ${version}`;
   }
 
+  create(createContentInput: CreateContentInput) {
+    console.log('createContentInput:', createContentInput);
+    return 'This action adds a new content';
+  }
+
   update(updateContentInput: UpdateContentInput) {
     console.log('updateContentInput:', updateContentInput);
     return `This action updates a #${updateContentInput.title} content`;
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} content`;
-  }
-
   resetVersion(resetContentInput: ResetContentInput) {
     console.log('resetContentInput', resetContentInput);
-    return `This action resets a #${resetContentInput.title} content`;
+    return `This action resets a #${resetContentInput.id} content`;
   }
 }

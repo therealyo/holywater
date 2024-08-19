@@ -10,7 +10,7 @@ type Content {
   title: String!
 
   """Content URL"""
-  content_url: String!
+  url: String!
 
   """Queried content version"""
   version: Int!
@@ -33,8 +33,9 @@ type ContentVersion {
 }
 
 type Query {
-  getContentVersions(title: String!): [ContentVersion!]!
-  content(title: String!, version: Int!): Content!
+  getContent(offset: Int! = 0, limit: Int! = 10): [Content!]!
+  getContentVersions(offset: Int! = 0, limit: Int! = 10, title: String!): [ContentVersion!]!
+  content(offset: Int! = 0, limit: Int! = 10, title: String!, version: Int!): Content!
 }
 
 type Mutation {
@@ -60,11 +61,12 @@ input UpdateContentInput {
 
   """Input for the content."""
   content: Upload!
+  id: ID!
 }
 
 input ResetContentInput {
-  """Content Title"""
-  title: String!
+  """Content ID"""
+  id: ID!
 
   """Input for the content."""
   version: Int!

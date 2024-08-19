@@ -1,32 +1,40 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { ContentService } from './content.service';
 import { Content, ContentVersion } from './entities/content.entity';
 import { CreateContentInput } from './dto/create-content.input';
 import { UpdateContentInput } from './dto/update-content.input';
 import { ResetContentInput } from './dto/reset-content.input';
+import { FindOneArgs } from './dto/find-one.args';
+import { ListVersionsArgs } from './dto/list-versions.args';
+import { FindManyArgs } from './dto/find-many.args';
 
 @Resolver(() => Content)
 export class ContentResolver {
   constructor(private readonly contentService: ContentService) {}
+
+  @Query(() => [Content], { name: 'getContent' })
+  findContent(@Args() findContentArgs: FindManyArgs) {
+    return this.contentService.findMany(
+      findContentArgs.limit,
+      findContentArgs.offset,
+    );
+  }
+
+  @Query(() => [ContentVersion], { name: 'getContentVersions' })
+  findContentVersions(@Args() listVersionsArgs: ListVersionsArgs) {
+    return this.contentService.findVersions(listVersionsArgs.title);
+  }
+
+  @Query(() => Content, { name: 'content' })
+  findOne(@Args() findOneArgs: FindOneArgs) {
+    return this.contentService.findOne(findOneArgs.title, findOneArgs.version);
+  }
 
   @Mutation(() => Content)
   createContent(
     @Args('createContentInput') createContentInput: CreateContentInput,
   ) {
     return this.contentService.create(createContentInput);
-  }
-
-  @Query(() => [ContentVersion], { name: 'getContentVersions' })
-  findContentVersions(@Args('title', { type: () => String }) title: string) {
-    return this.contentService.findVersions(title);
-  }
-
-  @Query(() => Content, { name: 'content' })
-  findOne(
-    @Args('title', { type: () => String }) title: string,
-    @Args('version', { type: () => Int }) version: number,
-  ) {
-    return this.contentService.findOne(title, version);
   }
 
   @Mutation(() => Content)

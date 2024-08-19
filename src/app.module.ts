@@ -12,6 +12,7 @@ import { ConfigModule } from './config/config.module';
 })
 export class AppModule {
   onApplicationBootstrap() {
+    // console.log(process.env);
     console.log('onApplicationBootstrap');
   }
 }
