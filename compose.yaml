@@ -6,6 +6,7 @@ services:
     depends_on:
       - postgres
       - dynamodb
+      - s3
       - redis
     build:
       context: .
@@ -17,6 +18,17 @@ services:
       - .:/app
     ports:
       - '3000:3000'
+
+  s3:
+    container_name: s3
+    image: localstack/localstack:s3-latest
+    ports:
+      - '4566:4566'
+    environment:
+      - DEBUG=${DEBUG:-0}
+    volumes:
+      - s3-data:/var/lib/localstack
+      - '/var/run/docker.sock:/var/run/docker.sock'
 
   postgres:
     image: postgres:13
@@ -54,4 +66,5 @@ services:
 volumes:
   postgres-data:
   dynamodb-data:
+  s3-data:
   redis-data:
