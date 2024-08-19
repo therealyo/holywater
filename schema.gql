@@ -33,7 +33,7 @@ type ContentVersion {
 }
 
 type Query {
-  getContentVersions: [ContentVersion!]!
+  getContentVersions(title: String!): [ContentVersion!]!
   content(title: String!, version: Int!): Content!
 }
 

@@ -9,8 +9,8 @@ export class ContentService {
     return 'This action adds a new content';
   }
 
-  findAll() {
-    return `This action returns all content`;
+  findVersions(title: string) {
+    return `This action returns all verions for ${title}`;
   }
 
   findOne(title: string, version: number) {

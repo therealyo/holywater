@@ -16,8 +16,8 @@ export class ContentResolver {
   }
 
   @Query(() => [ContentVersion], { name: 'getContentVersions' })
-  findContentVersions() {
-    return this.contentService.findAll();
+  findContentVersions(@Args('title', { type: () => String }) title: string) {
+    return this.contentService.findVersions(title);
   }
 
   @Query(() => Content, { name: 'content' })
