@@ -9,12 +9,15 @@ ENV NODE_ENV="production"
 ARG YARN_VERSION=1.22.22
 RUN npm install -g yarn@$YARN_VERSION --force
 
+# Install procps in the base image so it's available in the final stage as well
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y procps && rm -rf /var/lib/apt/lists/*
+
 
 FROM base as build
 
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3 procps && rm -rf /var/lib/apt/lists/*
-
+    apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3 && rm -rf /var/lib/apt/lists/*
 
 COPY --link package.json yarn.lock ./
 RUN yarn install --frozen-lockfile --production=false

@@ -7,7 +7,10 @@ import { GraphQLModule } from '@nestjs/graphql';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       useGlobalPrefix: true,
-      autoSchemaFile: true,
+      path: '/graphql',
+      autoSchemaFile: {
+        path: 'schema.gql',
+      },
       resolverValidationOptions: {
         requireResolversForAllFields: 'ignore',
         requireResolversForResolveType: 'ignore',

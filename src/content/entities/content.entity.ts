@@ -2,6 +2,27 @@ import { ObjectType, Field, Int } from '@nestjs/graphql';
 
 @ObjectType()
 export class Content {
-  @Field(() => Int, { description: 'Example field (placeholder)' })
-  exampleField: number;
+  @Field({ description: 'Primary id field for content' })
+  id: string;
+
+  @Field({ description: 'Content Title' })
+  title: string;
+
+  @Field({ description: 'Content URL' })
+  content_url: string;
+
+  @Field(() => Int, { description: 'Queried content version' })
+  version: number;
+
+  @Field(() => Date, { description: 'Creation date of version' })
+  created_at: Date;
+}
+
+@ObjectType()
+export class ContentVersion {
+  @Field(() => Int, { description: 'Queried content version' })
+  version: number;
+
+  @Field(() => Date, { description: 'Creation date of version' })
+  created_at: Date;
 }

@@ -10,4 +10,8 @@ import { ConfigModule } from './config/config.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  onApplicationBootstrap() {
+    console.log('onApplicationBootstrap');
+  }
+}

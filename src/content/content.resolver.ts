@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { ContentService } from './content.service';
 import { Content } from './entities/content.entity';
 import { CreateContentInput } from './dto/create-content.input';
@@ -21,7 +21,7 @@ export class ContentResolver {
   }
 
   @Query(() => Content, { name: 'content' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  findOne(@Args('id', { type: () => String }) id: string) {
     return this.contentService.findOne(id);
   }
 
@@ -36,7 +36,7 @@ export class ContentResolver {
   }
 
   @Mutation(() => Content)
-  removeContent(@Args('id', { type: () => Int }) id: number) {
+  removeContent(@Args('id', { type: () => String }) id: string) {
     return this.contentService.remove(id);
   }
 }
