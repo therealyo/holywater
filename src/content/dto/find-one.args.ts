@@ -1,5 +1,5 @@
 import { ArgsType, Field, Int } from '@nestjs/graphql';
-import { PaginationArgs } from 'src/common/pagination.input';
+import { PaginationArgs } from 'src/common/pagination/pagination.input';
 
 @ArgsType()
 export class FindOneArgs extends PaginationArgs {
