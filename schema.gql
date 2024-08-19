@@ -40,6 +40,7 @@ type Query {
 type Mutation {
   createContent(createContentInput: CreateContentInput!): Content!
   updateContent(updateContentInput: UpdateContentInput!): Content!
+  resetToVersion(resetContentInput: ResetContentInput!): Content!
 }
 
 input CreateContentInput {
@@ -59,4 +60,12 @@ input UpdateContentInput {
 
   """Input for the content."""
   content: Upload!
+}
+
+input ResetContentInput {
+  """Content Title"""
+  title: String!
+
+  """Input for the content."""
+  version: Int!
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateContentInput } from './dto/create-content.input';
 import { UpdateContentInput } from './dto/update-content.input';
+import { ResetContentInput } from './dto/reset-content.input';
 
 @Injectable()
 export class ContentService {
@@ -24,5 +25,10 @@ export class ContentService {
 
   remove(id: string) {
     return `This action removes a #${id} content`;
+  }
+
+  resetVersion(resetContentInput: ResetContentInput) {
+    console.log('resetContentInput', resetContentInput);
+    return `This action resets a #${resetContentInput.title} content`;
   }
 }

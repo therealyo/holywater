@@ -3,6 +3,7 @@ import { ContentService } from './content.service';
 import { Content, ContentVersion } from './entities/content.entity';
 import { CreateContentInput } from './dto/create-content.input';
 import { UpdateContentInput } from './dto/update-content.input';
+import { ResetContentInput } from './dto/reset-content.input';
 
 @Resolver(() => Content)
 export class ContentResolver {
@@ -33,5 +34,12 @@ export class ContentResolver {
     @Args('updateContentInput') updateContentInput: UpdateContentInput,
   ) {
     return this.contentService.update(updateContentInput);
+  }
+
+  @Mutation(() => Content)
+  resetToVersion(
+    @Args('resetContentInput') resetContentInput: ResetContentInput,
+  ) {
+    return this.contentService.resetVersion(resetContentInput);
   }
 }
