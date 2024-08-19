@@ -1,6 +1,6 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { ContentService } from './content.service';
-import { Content } from './entities/content.entity';
+import { Content, ContentVersion } from './entities/content.entity';
 import { CreateContentInput } from './dto/create-content.input';
 import { UpdateContentInput } from './dto/update-content.input';
 
@@ -15,28 +15,23 @@ export class ContentResolver {
     return this.contentService.create(createContentInput);
   }
 
-  @Query(() => [Content], { name: 'content' })
-  findAll() {
+  @Query(() => [ContentVersion], { name: 'getContentVersions' })
+  findContentVersions() {
     return this.contentService.findAll();
   }
 
   @Query(() => Content, { name: 'content' })
-  findOne(@Args('id', { type: () => String }) id: string) {
-    return this.contentService.findOne(id);
+  findOne(
+    @Args('title', { type: () => String }) title: string,
+    @Args('version', { type: () => Int }) version: number,
+  ) {
+    return this.contentService.findOne(title, version);
   }
 
   @Mutation(() => Content)
   updateContent(
     @Args('updateContentInput') updateContentInput: UpdateContentInput,
   ) {
-    return this.contentService.update(
-      updateContentInput.id,
-      updateContentInput,
-    );
-  }
-
-  @Mutation(() => Content)
-  removeContent(@Args('id', { type: () => String }) id: string) {
-    return this.contentService.remove(id);
+    return this.contentService.update(updateContentInput);
   }
 }

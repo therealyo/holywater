@@ -24,14 +24,22 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type ContentVersion {
+  """Queried content version"""
+  version: Int!
+
+  """Creation date of version"""
+  created_at: DateTime!
+}
+
 type Query {
-  content(id: String!): Content!
+  getContentVersions: [ContentVersion!]!
+  content(title: String!, version: Int!): Content!
 }
 
 type Mutation {
   createContent(createContentInput: CreateContentInput!): Content!
   updateContent(updateContentInput: UpdateContentInput!): Content!
-  removeContent(id: String!): Content!
 }
 
 input CreateContentInput {
@@ -46,8 +54,9 @@ input CreateContentInput {
 scalar Upload
 
 input UpdateContentInput {
-  id: ID!
+  """Content Title"""
+  title: String!
 
-  """Input for the content file."""
+  """Input for the content."""
   content: Upload!
 }

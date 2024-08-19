@@ -13,13 +13,13 @@ export class ContentService {
     return `This action returns all content`;
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} content`;
+  findOne(title: string, version: number) {
+    return `This action returns a #${title} content, version ${version}`;
   }
 
-  update(id: string, updateContentInput: UpdateContentInput) {
+  update(updateContentInput: UpdateContentInput) {
     console.log('updateContentInput:', updateContentInput);
-    return `This action updates a #${id} content`;
+    return `This action updates a #${updateContentInput.title} content`;
   }
 
   remove(id: string) {

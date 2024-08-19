@@ -5,9 +5,9 @@ import { Environment } from './environment';
 @Module({
   imports: [
     NestConfigModule.forRoot({
-      validate: () => {
-        throw new Error('Config not initalized');
-      },
+      // validate: () => {
+      // throw new Error('Config not initalized');
+      // },
       isGlobal: true,
       ignoreEnvFile:
         process.env.NODE_ENV === Environment.PRODUCTION ? true : false,
