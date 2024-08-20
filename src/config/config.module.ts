@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule as NestConfigModule } from '@nestjs/config';
-import { Environment } from './environment';
+// import { Environment } from './environment';
+// import  from './aws.provider';
 
 @Module({
   imports: [
@@ -9,9 +10,8 @@ import { Environment } from './environment';
       // throw new Error('Config not initalized');
       // },
       isGlobal: true,
-      ignoreEnvFile:
-        process.env.NODE_ENV === Environment.PRODUCTION ? true : false,
-      envFilePath: '.env',
+      ignoreEnvFile: true,
+      // load: [awsConfig, postgresConfig],
     }),
   ],
 })
