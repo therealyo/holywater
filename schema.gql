@@ -16,7 +16,7 @@ type Content {
   version: Int!
 
   """Creation date of version"""
-  created_at: DateTime!
+  createdAt: DateTime!
 }
 
 """
@@ -29,19 +29,17 @@ type ContentVersion {
   version: Int!
 
   """Creation date of version"""
-  created_at: DateTime!
+  createdAt: DateTime!
 }
 
 type Query {
-  getContent(offset: Int! = 0, limit: Int! = 10): [Content!]!
-  getContentVersions(offset: Int! = 0, limit: Int! = 10, title: String!): [ContentVersion!]!
+  getContentVersions(offset: Int! = 0, limit: Int! = 10, id: ID!): [ContentVersion!]!
   content(offset: Int! = 0, limit: Int! = 10, title: String!, version: Int!): Content!
 }
 
 type Mutation {
   createContent(createContentInput: CreateContentInput!): Content!
   updateContent(updateContentInput: UpdateContentInput!): Content!
-  resetToVersion(resetContentInput: ResetContentInput!): Content!
 }
 
 input CreateContentInput {
@@ -62,12 +60,4 @@ input UpdateContentInput {
   """Input for the content."""
   content: Upload!
   id: ID!
-}
-
-input ResetContentInput {
-  """Content ID"""
-  id: ID!
-
-  """Input for the content."""
-  version: Int!
 }

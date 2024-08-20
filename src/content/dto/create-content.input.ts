@@ -9,5 +9,5 @@ export class CreateContentInput {
   title: string;
 
   @Field(() => GraphQLUpload, { description: 'Input for the content.' })
-  content: Upload;
+  content: Promise<Upload>;
 }

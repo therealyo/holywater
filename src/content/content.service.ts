@@ -1,35 +1,113 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateContentInput } from './dto/create-content.input';
 import { UpdateContentInput } from './dto/update-content.input';
-import { ResetContentInput } from './dto/reset-content.input';
+
+import {
+  METADATA_STORAGE,
+  MetadataStorage,
+} from './interfaces/metadata-storage.interface';
+import {
+  CONTENT_STORAGE,
+  ContentStorage,
+} from './interfaces/content-storage.interface';
+import { v4 as uuidv4 } from 'uuid';
+import { Content, ContentVersion } from './entities/content.entity';
 
 @Injectable()
 export class ContentService {
-  constructor() {}
+  constructor(
+    @Inject(METADATA_STORAGE) private readonly metadataStorage: MetadataStorage,
+    @Inject(CONTENT_STORAGE) private readonly contentStorage: ContentStorage,
+  ) {}
 
-  findMany(take: number, skip: number) {
-    return `This action returns content for take: ${take}, skip: ${skip}`;
-  }
-  findVersions(title: string) {
-    return `This action returns all verions for ${title}`;
-  }
-
-  findOne(title: string, version: number) {
-    return `This action returns a #${title} content, version ${version}`;
+  async findVersions(id: string): Promise<ContentVersion[]> {
+    return this.metadataStorage.findVersions(id);
   }
 
-  create(createContentInput: CreateContentInput) {
-    console.log('createContentInput:', createContentInput);
-    return 'This action adds a new content';
+  async findOne(id: string, version: number): Promise<Content> {
+    const metadata = await this.metadataStorage.findOne(id, version);
+    if (!metadata) {
+      throw new Error(`Content with ID ${id} and version ${version} not found`);
+    }
+
+    const contentUrl = await this.contentStorage.findOne(id, version);
+    return {
+      id,
+      title: metadata.title,
+      version,
+      url: contentUrl,
+      createdAt: metadata.createdAt,
+    };
   }
 
-  update(updateContentInput: UpdateContentInput) {
-    console.log('updateContentInput:', updateContentInput);
-    return `This action updates a #${updateContentInput.title} content`;
+  async create(createContentInput: CreateContentInput): Promise<Content> {
+    const id = uuidv4();
+    const version = 1;
+    const createdAt = new Date();
+
+    await this.contentStorage.save(
+      id,
+      version,
+      await createContentInput.content,
+    );
+    await this.metadataStorage.save(
+      id,
+      createContentInput.title,
+      version,
+      createdAt,
+    );
+
+    return {
+      id,
+      title: createContentInput.title,
+      url: `mock/${id}-${version}`,
+      version,
+      createdAt,
+    };
   }
 
-  resetVersion(resetContentInput: ResetContentInput) {
-    console.log('resetContentInput', resetContentInput);
-    return `This action resets a #${resetContentInput.id} content`;
+  async update(updateContentInput: UpdateContentInput): Promise<Content> {
+    const { id, title } = updateContentInput;
+
+    const latestVersion = await this.metadataStorage.latestVersion(id);
+
+    if (!latestVersion) throw new Error('content not found');
+
+    const newVersion = latestVersion + 1;
+    const createdAt = new Date();
+
+    await this.contentStorage.save(
+      id,
+      newVersion,
+      await updateContentInput.content,
+    );
+    await this.metadataStorage.save(id, title, newVersion, createdAt);
+
+    return {
+      id,
+      title,
+      url: `mock/${id}-${newVersion}`,
+      version: newVersion,
+      createdAt,
+    };
   }
+
+  // async resetVersion(resetContentInput: ResetContentInput): Promise<Content> {
+  //   const { id, version } = resetContentInput;
+  //   const metadata = await this.metadataStorage.findOne(id, version);
+
+  //   if (!metadata) {
+  //     throw new Error(`No content found with ID ${id} and version ${version}`);
+  //   }
+
+  //   await this.contentStorage.save(id, version);
+
+  //   return {
+  //     id,
+  //     title: '', // Fetch or infer the title if needed
+  //     url: `mock/${id}-${version}`,
+  //     version,
+  //     created_at: metadata.created_at,
+  //   };
+  // }
 }

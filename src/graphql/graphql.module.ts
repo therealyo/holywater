@@ -6,6 +6,10 @@ import { GraphQLModule } from '@nestjs/graphql';
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
+      formatError: (err) => ({
+        message: err.message,
+        status: err.extensions.code,
+      }),
       useGlobalPrefix: true,
       path: '/graphql',
       autoSchemaFile: {

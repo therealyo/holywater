@@ -15,7 +15,7 @@ export class Content {
   version: number;
 
   @Field(() => Date, { description: 'Creation date of version' })
-  created_at: Date;
+  createdAt: Date;
 }
 
 @ObjectType()
@@ -24,5 +24,5 @@ export class ContentVersion {
   version: number;
 
   @Field(() => Date, { description: 'Creation date of version' })
-  created_at: Date;
+  createdAt: Date;
 }
