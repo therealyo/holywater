@@ -11,10 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
       formatError: (error: any): GraphQLFormattedError => {
         console.log(error);
         const graphQLFormattedError: GraphQLFormattedError = {
-          message:
-            error.extensions?.exception?.response?.message ||
-            error.message ||
-            'Internal server error',
+          message: error.message || 'Internal server error',
           extensions: {
             code: error.extensions?.status || HttpStatus.INTERNAL_SERVER_ERROR,
             name: error.extensions?.name || error.name,
@@ -24,6 +21,7 @@ import { v4 as uuidv4 } from 'uuid';
         };
 
         return graphQLFormattedError;
+        // return error;
       },
       context: () => {
         return { userId: uuidv4() };

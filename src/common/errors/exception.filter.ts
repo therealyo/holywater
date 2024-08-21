@@ -7,9 +7,9 @@ import {
 import { NotFoundError } from './not-found.error';
 import { GraphQLError } from 'graphql';
 
-@Catch(Error)
+@Catch(GraphQLError)
 export class GraphQLExceptionFilter implements ExceptionFilter {
-  catch(exception: Error) {
+  catch(exception: GraphQLError) {
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
       const response = exception.getResponse();
