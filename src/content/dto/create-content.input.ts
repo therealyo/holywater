@@ -2,7 +2,6 @@ import { InputType, Field } from '@nestjs/graphql';
 import { IsString } from 'class-validator';
 
 import * as GraphQLUpload from 'graphql-upload/GraphQLUpload.js';
-// import * as Upload from 'graphql-upload/Upload.js';
 import { File } from 'src/upload/file';
 
 @InputType()
