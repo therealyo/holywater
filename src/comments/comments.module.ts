@@ -15,5 +15,6 @@ import { DynamoDBCommentStorage } from './storage/dynamodb.service';
       useClass: DynamoDBCommentStorage,
     },
   ],
+  exports: [CommentsService],
 })
 export class CommentsModule {}

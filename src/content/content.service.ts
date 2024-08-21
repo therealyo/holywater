@@ -38,7 +38,8 @@ export class ContentService {
       id,
       title: metadata.title,
       version: metadata.version,
-      url: contentUrl,
+      // url: contentUrl,
+      url: `mock/${id}-${version}`,
       createdAt: metadata.createdAt,
     };
   }

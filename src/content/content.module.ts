@@ -8,9 +8,10 @@ import { S3Module } from 'src/storage/s3/s3.module';
 import { PostgresMetadataStorage } from './metadata/storage.service';
 import { PostgresModule } from 'src/database/postgres/postgres.module';
 import { S3ContentStorageService } from './storage/s3.service';
+import { CommentsModule } from 'src/comments/comments.module';
 
 @Module({
-  imports: [S3Module, PostgresModule],
+  imports: [S3Module, PostgresModule, CommentsModule],
   providers: [
     ContentResolver,
     ContentService,

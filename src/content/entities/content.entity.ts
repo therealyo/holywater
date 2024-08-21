@@ -1,4 +1,5 @@
 import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
+import { PaginatedComments } from 'src/comments/entities/comment.entity';
 
 @ObjectType()
 export class Content {
@@ -16,6 +17,9 @@ export class Content {
 
   @Field(() => Date, { description: 'Creation date of version' })
   createdAt: Date;
+
+  @Field(() => PaginatedComments, { nullable: true })
+  comments?: PaginatedComments;
 }
 
 @ObjectType()

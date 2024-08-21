@@ -1,14 +1,27 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { ContentService } from './content.service';
 import { Content, ContentVersion } from './entities/content.entity';
 import { CreateContentInput } from './dto/create-content.input';
 import { UpdateContentInput } from './dto/update-content.input';
 import { FindOneArgs } from './dto/find-one.args';
 import { ListVersionsArgs } from './dto/list-versions.args';
+import { PaginatedComments } from 'src/comments/entities/comment.entity';
+import { CommentsService } from 'src/comments/comments.service';
+import { PaginateComments } from './dto/paginate-comments.args';
 
 @Resolver(() => Content)
 export class ContentResolver {
-  constructor(private readonly contentService: ContentService) {}
+  constructor(
+    private readonly contentService: ContentService,
+    private readonly commentService: CommentsService,
+  ) {}
 
   @Query(() => [ContentVersion], { name: 'getContentVersions' })
   findContentVersions(@Args() listVersionsArgs: ListVersionsArgs) {
@@ -16,7 +29,8 @@ export class ContentResolver {
   }
 
   @Query(() => Content, { name: 'content' })
-  findOne(@Args() findOneArgs: FindOneArgs) {
+  async findOne(@Args() findOneArgs: FindOneArgs) {
+    console.log(await this.contentService.findOne(findOneArgs));
     return this.contentService.findOne(findOneArgs);
   }
 
@@ -40,4 +54,18 @@ export class ContentResolver {
   // ) {
   //   return this.contentService.resetVersion(resetContentInput);
   // }
+
+  @ResolveField(() => PaginatedComments, {
+    description: 'Paginated comments for content',
+  })
+  async comments(
+    @Parent() content: Content,
+    @Args() paginatation: PaginateComments,
+  ): Promise<PaginatedComments> {
+    return this.commentService.findMany({
+      contentId: content.id,
+      limit: paginatation.limit,
+      cursor: paginatation.cursor ? new Date(paginatation.cursor) : undefined,
+    });
+  }
 }

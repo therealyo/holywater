@@ -2,40 +2,15 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Content {
-  """Primary id field for content"""
-  id: ID!
-
-  """Content Title"""
-  title: String!
-
-  """Content URL"""
-  url: String!
-
-  """Queried content version"""
-  version: Int!
-
-  """Creation date of version"""
-  createdAt: DateTime!
+type PageInfo {
+  nextCursor: DateTime
+  hasNextPage: Boolean!
 }
 
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
-
-type ContentVersion {
-  """Queried content version"""
-  version: Int!
-
-  """Creation date of version"""
-  createdAt: DateTime!
-}
-
-type PageInfo {
-  nextCursor: DateTime
-  hasNextPage: Boolean!
-}
 
 type Comment {
   """Comment ID"""
@@ -54,6 +29,32 @@ type PaginatedComments {
   items: [Comment!]!
   total: Int!
   pageInfo: PageInfo!
+}
+
+type Content {
+  """Primary id field for content"""
+  id: ID!
+
+  """Content Title"""
+  title: String!
+
+  """Content URL"""
+  url: String!
+
+  """Queried content version"""
+  version: Int!
+
+  """Creation date of version"""
+  createdAt: DateTime!
+  comments(limit: Int! = 10, cursor: DateTime): PaginatedComments
+}
+
+type ContentVersion {
+  """Queried content version"""
+  version: Int!
+
+  """Creation date of version"""
+  createdAt: DateTime!
 }
 
 type Query {
