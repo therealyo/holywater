@@ -32,24 +32,40 @@ type ContentVersion {
   createdAt: DateTime!
 }
 
+type PageInfo {
+  nextCursor: DateTime
+  hasNextPage: Boolean!
+}
+
 type Comment {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  """Comment ID"""
+  id: ID!
+
+  """Related content ID"""
+  contentId: String!
+
+  """User Id"""
+  userId: String!
+  text: String!
+  createdAt: DateTime!
+}
+
+type PaginatedComments {
+  items: [Comment!]!
+  total: Int!
+  pageInfo: PageInfo!
 }
 
 type Query {
-  getContentVersions(skip: Int! = 0, limit: Int! = 10, id: ID!): [ContentVersion!]!
+  getContentVersions(skip: Int = 0, limit: Int = 10, id: ID!): [ContentVersion!]!
   content(id: ID!, version: Int): Content!
-  comments: [Comment!]!
-  comment(id: Int!): Comment!
+  comments(limit: Int! = 10, cursor: DateTime, contentId: String!): PaginatedComments!
 }
 
 type Mutation {
   createContent(createContentInput: CreateContentInput!): Content!
   updateContent(updateContentInput: UpdateContentInput!): Content!
   createComment(createCommentInput: CreateCommentInput!): Comment!
-  updateComment(updateCommentInput: UpdateCommentInput!): Comment!
-  removeComment(id: Int!): Comment!
 }
 
 input CreateContentInput {
@@ -73,12 +89,9 @@ input UpdateContentInput {
 }
 
 input CreateCommentInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
+  """Related content id"""
+  contentId: String!
 
-input UpdateCommentInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  """Comment"""
+  text: String!
 }

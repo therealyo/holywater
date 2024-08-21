@@ -3,11 +3,11 @@ import { IsPositive } from 'class-validator';
 
 @ArgsType()
 export class PaginationArgs {
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   @IsPositive()
   skip: number = 0;
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   @IsPositive()
   limit: number = 10;
 }

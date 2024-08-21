@@ -19,24 +19,17 @@ services:
     ports:
       - '3000:3000'
 
-  # s3:
-  #   image: localstack/localstack:s3-latest
-  #   ports:
-  #     - '4566:4566'
-  #   environment:
-  #     - DEBUG=${DEBUG:-0}
-  #   volumes:
-  #     - s3-data:/var/lib/localstack
-  #     - '/var/run/docker.sock:/var/run/docker.sock'
-
   s3:
     image: localstack/localstack
     environment:
       - SERVICES=s3
+      - PERSISTENCE=1
+      - BUCKET_NAME=holywater-content
     ports:
       - '4566:4566'
     volumes:
       - ./scripts/aws:/etc/localstack/init/ready.d
+      - s3-data:/var/lib/localstack
 
   postgres:
     image: postgres:13
@@ -52,14 +45,16 @@ services:
       - postgres-data:/var/lib/postgresql/data/
 
   dynamodb:
-    command: '-jar DynamoDBLocal.jar -sharedDb -dbPath ./data'
-    image: 'amazon/dynamodb-local:latest'
+    image: localstack/localstack
     ports:
-      - '8000:8000'
-    user: root
+      - '8000:4566'
+    environment:
+      - SERVICES=dynamodb
+      - PERSISTENCE=1
+      - TABLE_NAME=Comments
     volumes:
-      - dynamodb-data:/home/dynamodblocal/data
-    working_dir: /home/dynamodblocal
+      - ./scripts/aws:/etc/localstack/init/ready.d
+      - dynamodb-data:/var/lib/localstack
 
   redis:
     image: redis:7.4.0-alpine
