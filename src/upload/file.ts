@@ -1,4 +1,3 @@
-// import { ReadStream } from 'fs';
 import { Readable } from 'stream';
 
 export class File {

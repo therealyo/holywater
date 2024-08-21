@@ -95,7 +95,7 @@ export class ContentService {
 
     if (!metadata || !content) {
       throw new NotFoundError(
-        `No for content found with ID ${id} and version ${version}`,
+        `No content found with ID ${id} and version ${version}`,
       );
     }
 

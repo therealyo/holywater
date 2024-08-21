@@ -10,8 +10,4 @@ import { HealthController } from './health/health.controller';
   imports: [GraphqlModule, ConfigModule, ContentModule, CommentsModule],
   controllers: [HealthController],
 })
-export class AppModule {
-  onApplicationBootstrap() {
-    console.log('onApplicationBootstrap');
-  }
-}
+export class AppModule {}

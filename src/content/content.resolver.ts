@@ -16,7 +16,7 @@ import { PaginatedComments } from 'src/comments/entities/comment.entity';
 import { CommentsService } from 'src/comments/comments.service';
 import { PaginateComments } from './dto/paginate-comments.args';
 import { ResetContentInput } from './dto/reset-content.input';
-import { File } from 'src/upload/file';
+import { FileTransformPipe } from 'src/common/pipes/file-transform.pipe';
 
 @Resolver(() => Content)
 export class ContentResolver {
@@ -32,29 +32,28 @@ export class ContentResolver {
 
   @Query(() => Content, { name: 'content' })
   async findOne(@Args() findOneArgs: FindOneArgs) {
-    console.log(await this.contentService.findOne(findOneArgs));
     return this.contentService.findOne(findOneArgs);
   }
 
   @Mutation(() => Content)
   async createContent(
-    @Args('createContentInput') createContentInput: CreateContentInput,
+    @Args('createContentInput', new FileTransformPipe(['text/plain']))
+    createContentInput: CreateContentInput,
   ) {
-    const file = await createContentInput.content;
     return this.contentService.create(
       createContentInput.title,
-      new File(file.mimetype, file.createReadStream()),
+      createContentInput.content,
     );
   }
 
   @Mutation(() => Content)
   async updateContent(
-    @Args('updateContentInput') updateContentInput: UpdateContentInput,
+    @Args('updateContentInput', new FileTransformPipe(['text/plain']))
+    updateContentInput: UpdateContentInput,
   ) {
-    const file = await updateContentInput.content;
     return this.contentService.update(
       updateContentInput.id,
-      new File(file.mimetype, file.createReadStream()),
+      updateContentInput.content,
       updateContentInput.title,
     );
   }

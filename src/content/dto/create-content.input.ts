@@ -2,7 +2,8 @@ import { InputType, Field } from '@nestjs/graphql';
 import { IsString } from 'class-validator';
 
 import * as GraphQLUpload from 'graphql-upload/GraphQLUpload.js';
-import * as Upload from 'graphql-upload/Upload.js';
+// import * as Upload from 'graphql-upload/Upload.js';
+import { File } from 'src/upload/file';
 
 @InputType()
 export class CreateContentInput {
@@ -11,5 +12,5 @@ export class CreateContentInput {
   title: string;
 
   @Field(() => GraphQLUpload, { description: 'Input for the content.' })
-  content: Promise<Upload>;
+  content: File;
 }

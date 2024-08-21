@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       formatError: (error: any): GraphQLFormattedError => {
+        console.log(error);
         const graphQLFormattedError: GraphQLFormattedError = {
           message:
             error.extensions?.exception?.response?.message ||

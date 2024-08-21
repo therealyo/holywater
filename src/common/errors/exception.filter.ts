@@ -1,8 +1,8 @@
 import {
   ExceptionFilter,
   Catch,
-  //   ArgumentsHost,
   HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import { NotFoundError } from './not-found.error';
 import { GraphQLError } from 'graphql';
@@ -10,6 +10,22 @@ import { GraphQLError } from 'graphql';
 @Catch(Error)
 export class GraphQLExceptionFilter implements ExceptionFilter {
   catch(exception: Error) {
+    if (exception instanceof HttpException) {
+      const status = exception.getStatus();
+      const response = exception.getResponse();
+
+      throw new GraphQLError(
+        typeof response === 'string' ? response : (response as any).message,
+        {
+          extensions: {
+            code: status,
+            status,
+            name: exception.name,
+          },
+        },
+      );
+    }
+
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
 
     if (exception instanceof NotFoundError) {
