@@ -10,7 +10,7 @@ export class Content {
   title: string;
 
   @Field({ description: 'Content URL' })
-  url: string;
+  url?: string;
 
   @Field(() => Int, { description: 'Queried content version' })
   version: number;

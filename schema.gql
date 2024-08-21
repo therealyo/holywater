@@ -66,6 +66,7 @@ type Query {
 type Mutation {
   createContent(createContentInput: CreateContentInput!): Content!
   updateContent(updateContentInput: UpdateContentInput!): Content!
+  resetToVersion(resetContentInput: ResetContentInput!): Content!
   createComment(createCommentInput: CreateCommentInput!): Comment!
 }
 
@@ -82,11 +83,19 @@ scalar Upload
 
 input UpdateContentInput {
   """Content Title"""
-  title: String!
+  title: String
 
   """Input for the content."""
-  content: Upload!
+  content: Upload
   id: ID!
+}
+
+input ResetContentInput {
+  """Content ID"""
+  id: ID!
+
+  """Version of the content to reset to"""
+  version: Int!
 }
 
 input CreateCommentInput {

@@ -3,9 +3,14 @@ import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  GetObjectCommandInput,
 } from '@aws-sdk/client-s3';
 import { ContentStorage } from 'src/content/interfaces/content-storage.interface';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { CONTENT_BUCKET, S3_CLIENT } from 'src/storage/s3/s3.provider';
+import { Readable } from 'stream';
+import { replaceDevHost } from 'src/common/host-replace';
+import { File } from 'src/upload/file';
 
 @Injectable()
 export class S3ContentStorageService implements ContentStorage {
@@ -14,22 +19,35 @@ export class S3ContentStorageService implements ContentStorage {
     @Inject(CONTENT_BUCKET) private readonly bucket: string,
   ) {}
 
-  async save(id: string, version: number, payload: any): Promise<void> {
-    const key = `${id}-${version}`;
+  async save(id: string, version: number, payload: File): Promise<void> {
+    const key = `${id}/${version}`;
 
     const command = new PutObjectCommand({
       Bucket: `${this.bucket}`,
       Key: key,
       ContentType: payload.mimetype,
-      Body: payload.createReadStream(),
+      Body: payload.uploadStream,
     });
-    const response = await this.s3Client.send(command);
 
-    console.log(response);
+    await this.s3Client.send(command);
   }
 
-  async findOne(id: string, version: number): Promise<string | undefined> {
-    const key = `${id}-${version}`;
+  async downloadUrl(id: string, version: number): Promise<string> {
+    const key = `${id}/${version}`;
+
+    const params: GetObjectCommandInput = {
+      Bucket: this.bucket,
+      Key: key,
+    };
+
+    const command = new GetObjectCommand(params);
+    const url = await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
+
+    return replaceDevHost(url);
+  }
+
+  async getOne(id: string, version: number): Promise<File | undefined> {
+    const key = `${id}/${version}`;
     const params = {
       Bucket: this.bucket,
       Key: key,
@@ -38,8 +56,11 @@ export class S3ContentStorageService implements ContentStorage {
     try {
       const command = new GetObjectCommand(params);
       const data = await this.s3Client.send(command);
-      // Assuming data.Body is a Readable stream, you can convert it to a string
-      return data.Body?.toString(); // Adjust according to how you handle the response
+
+      const mimetype = data.ContentType;
+      const stream = data.Body as Readable;
+
+      return new File(mimetype, stream);
     } catch (error) {
       if (error.name === 'NoSuchKey') {
         return undefined;

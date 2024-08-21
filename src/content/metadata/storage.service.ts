@@ -19,16 +19,21 @@ export class PostgresMetadataStorage implements MetadataStorage {
 
   async save(
     id: string,
-    title: string,
     version: number,
     createdAt: Date,
-  ): Promise<void> {
-    await this.connection.insert(this.table).values({
-      id,
-      title,
-      version,
-      createdAt,
-    });
+    title?: string,
+  ): Promise<Content> {
+    return (
+      await this.connection
+        .insert(this.table)
+        .values({
+          id,
+          title,
+          version,
+          createdAt,
+        })
+        .returning()
+    )[0];
   }
 
   async findVersions(

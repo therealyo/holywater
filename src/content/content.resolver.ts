@@ -15,6 +15,8 @@ import { ListVersionsArgs } from './dto/list-versions.args';
 import { PaginatedComments } from 'src/comments/entities/comment.entity';
 import { CommentsService } from 'src/comments/comments.service';
 import { PaginateComments } from './dto/paginate-comments.args';
+import { ResetContentInput } from './dto/reset-content.input';
+import { File } from 'src/upload/file';
 
 @Resolver(() => Content)
 export class ContentResolver {
@@ -35,25 +37,34 @@ export class ContentResolver {
   }
 
   @Mutation(() => Content)
-  createContent(
+  async createContent(
     @Args('createContentInput') createContentInput: CreateContentInput,
   ) {
-    return this.contentService.create(createContentInput);
+    const file = await createContentInput.content;
+    return this.contentService.create(
+      createContentInput.title,
+      new File(file.mimetype, file.createReadStream()),
+    );
   }
 
   @Mutation(() => Content)
-  updateContent(
+  async updateContent(
     @Args('updateContentInput') updateContentInput: UpdateContentInput,
   ) {
-    return this.contentService.update(updateContentInput);
+    const file = await updateContentInput.content;
+    return this.contentService.update(
+      updateContentInput.id,
+      new File(file.mimetype, file.createReadStream()),
+      updateContentInput.title,
+    );
   }
 
-  // @Mutation(() => Content)
-  // resetToVersion(
-  //   @Args('resetContentInput') resetContentInput: ResetContentInput,
-  // ) {
-  //   return this.contentService.resetVersion(resetContentInput);
-  // }
+  @Mutation(() => Content)
+  resetToVersion(
+    @Args('resetContentInput') resetContentInput: ResetContentInput,
+  ) {
+    return this.contentService.resetVersion(resetContentInput);
+  }
 
   @ResolveField(() => PaginatedComments, {
     description: 'Paginated comments for content',

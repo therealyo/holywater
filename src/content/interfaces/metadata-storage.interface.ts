@@ -3,10 +3,10 @@ import { Content, ContentVersion } from '../entities/content.entity';
 export interface MetadataStorage {
   save(
     id: string,
-    title: string,
     version: number,
     createdAt: Date,
-  ): Promise<void>;
+    title?: string,
+  ): Promise<Content>;
   findVersions(
     id: string,
     limit: number,

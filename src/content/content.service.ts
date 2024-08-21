@@ -1,6 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateContentInput } from './dto/create-content.input';
-import { UpdateContentInput } from './dto/update-content.input';
 
 import {
   METADATA_STORAGE,
@@ -14,6 +12,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { Content, ContentVersion } from './entities/content.entity';
 import { ListVersionsArgs } from './dto/list-versions.args';
 import { FindOneArgs } from './dto/find-one.args';
+import { ResetContentInput } from './dto/reset-content.input';
+import { File } from 'src/upload/file';
 
 @Injectable()
 export class ContentService {
@@ -33,85 +33,83 @@ export class ContentService {
       throw new Error(`Content with ID ${id} not found`);
     }
 
-    const contentUrl = await this.contentStorage.findOne(id, metadata.version);
     return {
       id,
       title: metadata.title,
       version: metadata.version,
-      // url: contentUrl,
-      url: `mock/${id}-${version}`,
+      url: await this.contentStorage.downloadUrl(id, metadata.version),
       createdAt: metadata.createdAt,
     };
   }
 
-  async create(createContentInput: CreateContentInput): Promise<Content> {
+  async create(title: string, upload: File): Promise<Content> {
     const id = uuidv4();
     const version = 1;
     const createdAt = new Date();
 
-    await this.contentStorage.save(
-      id,
-      version,
-      await createContentInput.content,
-    );
-    await this.metadataStorage.save(
-      id,
-      createContentInput.title,
-      version,
-      createdAt,
-    );
+    await this.contentStorage.save(id, version, upload);
+    await this.metadataStorage.save(id, version, createdAt, title);
 
     return {
       id,
-      title: createContentInput.title,
-      url: `mock/${id}-${version}`,
+      title,
+      url: await this.contentStorage.downloadUrl(id, version),
       version,
       createdAt,
     };
   }
 
-  async update(updateContentInput: UpdateContentInput): Promise<Content> {
-    const { id, title } = updateContentInput;
+  async update(id: string, upload: File, title?: string): Promise<Content> {
+    const lastVersion = await this.metadataStorage.findOne(id);
 
-    const latestVersion = await this.metadataStorage.latestVersion(id);
+    if (!lastVersion) throw new Error('content not found');
 
-    if (!latestVersion) throw new Error('content not found');
-
-    const newVersion = latestVersion + 1;
+    const newVersion = lastVersion.version + 1;
     const createdAt = new Date();
 
-    await this.contentStorage.save(
+    await this.contentStorage.save(id, newVersion, upload);
+    const updatedContent = await this.metadataStorage.save(
       id,
       newVersion,
-      await updateContentInput.content,
+      createdAt,
+      title ? title : lastVersion.title,
     );
-    await this.metadataStorage.save(id, title, newVersion, createdAt);
+
+    console.log(updatedContent);
 
     return {
       id,
-      title,
-      url: `mock/${id}-${newVersion}`,
+      title: updatedContent.title,
+      url: await this.contentStorage.downloadUrl(id, newVersion),
       version: newVersion,
       createdAt,
     };
   }
 
-  // async resetVersion(resetContentInput: ResetContentInput): Promise<Content> {
-  //   const { id, version } = resetContentInput;
-  //   const metadata = await this.metadataStorage.findOne(id, version);
+  async resetVersion(resetContentInput: ResetContentInput): Promise<Content> {
+    const { id, version } = resetContentInput;
+    const metadata = await this.metadataStorage.findOne(id, version);
 
-  //   if (!metadata) {
-  //     throw new Error(`No content found with ID ${id} and version ${version}`);
-  //   }
+    if (!metadata) {
+      throw new Error(
+        `No metadata for content found with ID ${id} and version ${version}`,
+      );
+    }
 
-  //   await this.contentStorage.save(id, version);
+    const content = await this.contentStorage.getOne(id, version);
 
-  //   return {
-  //     id,
-  //     title: '', // Fetch or infer the title if needed
-  //     url: `mock/${id}-${version}`,
-  //     version,
-  //     created_at: metadata.created_at,
-  //   };
-  // }
+    if (!content) {
+      throw new Error(`No content found with ID ${id} and version ${version}`);
+    }
+
+    const newVersion = await this.update(id, content, metadata.title);
+
+    return {
+      id,
+      title: newVersion.title,
+      url: await this.contentStorage.downloadUrl(id, newVersion.version),
+      version: newVersion.version,
+      createdAt: newVersion.createdAt,
+    };
+  }
 }
