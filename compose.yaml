@@ -12,7 +12,7 @@ services:
       context: .
       dockerfile: Dockerfile
 
-    command: sleep infinity
+    # command: sleep infinity
     env_file: .env
     volumes:
       - .:/app

@@ -16,14 +16,9 @@ export class PostgresModule implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    console.log('postgres onModuleInit');
     await migrate(this.db, { migrationsFolder: 'migrations' });
     console.log('Migrations completed');
   }
 }
 {
-  // onApplicationBootstrap() {
-  //   // throw new Error('test');
-  //   console.log('postgres onApplicationBootstrap');
-  // }
 }
