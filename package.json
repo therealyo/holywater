@@ -31,6 +31,7 @@
     "@nestjs/graphql": "^12.2.0",
     "@nestjs/platform-express": "^10.0.0",
     "cache-manager": "^5.7.6",
+    "class-validator": "^0.14.1",
     "drizzle-orm": "^0.33.0",
     "graphql": "^16.9.0",
     "graphql-upload": "14",

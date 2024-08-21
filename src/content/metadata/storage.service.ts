@@ -31,12 +31,18 @@ export class PostgresMetadataStorage implements MetadataStorage {
     });
   }
 
-  async findVersions(id: string): Promise<ContentVersion[]> {
+  async findVersions(
+    id: string,
+    limit: number,
+    skip: number,
+  ): Promise<ContentVersion[]> {
     const rows = await this.connection
       .select()
       .from(this.table)
       .where(eq(this.table.id, id))
-      .orderBy(desc(this.table.version));
+      .orderBy(desc(this.table.version))
+      .limit(limit)
+      .offset(skip);
 
     return rows.map((row) => ({
       version: row.version,
@@ -57,12 +63,17 @@ export class PostgresMetadataStorage implements MetadataStorage {
 
   async findOne(
     id: string,
-    version: number,
+    version?: number,
   ): Promise<Partial<Content> | undefined> {
+    const whereCondition = version
+      ? and(eq(this.table.id, id), eq(this.table.version, version))
+      : eq(this.table.id, id);
+
     const row = await this.connection
       .select()
       .from(this.table)
-      .where(and(eq(this.table.id, id), eq(this.table.version, version)))
+      .where(whereCondition)
+      .orderBy(desc(this.table.version))
       .limit(1);
 
     if (!row.length) {

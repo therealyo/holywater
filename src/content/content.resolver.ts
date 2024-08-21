@@ -12,12 +12,12 @@ export class ContentResolver {
 
   @Query(() => [ContentVersion], { name: 'getContentVersions' })
   findContentVersions(@Args() listVersionsArgs: ListVersionsArgs) {
-    return this.contentService.findVersions(listVersionsArgs.id);
+    return this.contentService.findVersions(listVersionsArgs);
   }
 
   @Query(() => Content, { name: 'content' })
   findOne(@Args() findOneArgs: FindOneArgs) {
-    return this.contentService.findOne(findOneArgs.title, findOneArgs.version);
+    return this.contentService.findOne(findOneArgs);
   }
 
   @Mutation(() => Content)

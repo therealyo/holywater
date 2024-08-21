@@ -32,14 +32,24 @@ type ContentVersion {
   createdAt: DateTime!
 }
 
+type Comment {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
 type Query {
-  getContentVersions(offset: Int! = 0, limit: Int! = 10, id: ID!): [ContentVersion!]!
-  content(offset: Int! = 0, limit: Int! = 10, title: String!, version: Int!): Content!
+  getContentVersions(skip: Int! = 0, limit: Int! = 10, id: ID!): [ContentVersion!]!
+  content(id: ID!, version: Int): Content!
+  comments: [Comment!]!
+  comment(id: Int!): Comment!
 }
 
 type Mutation {
   createContent(createContentInput: CreateContentInput!): Content!
   updateContent(updateContentInput: UpdateContentInput!): Content!
+  createComment(createCommentInput: CreateCommentInput!): Comment!
+  updateComment(updateCommentInput: UpdateCommentInput!): Comment!
+  removeComment(id: Int!): Comment!
 }
 
 input CreateContentInput {
@@ -60,4 +70,15 @@ input UpdateContentInput {
   """Input for the content."""
   content: Upload!
   id: ID!
+}
+
+input CreateCommentInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateCommentInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
 }

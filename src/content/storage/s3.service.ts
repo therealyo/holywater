@@ -31,7 +31,6 @@ export class S3ContentStorageService implements ContentStorage {
   async findOne(id: string, version: number): Promise<string | undefined> {
     const key = `${id}-${version}`;
     const params = {
-      // Bucket: this.config.get<string>('BUCKET_NAME'),
       Bucket: this.bucket,
       Key: key,
     };

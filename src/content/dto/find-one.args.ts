@@ -1,11 +1,13 @@
-import { ArgsType, Field, Int } from '@nestjs/graphql';
-import { PaginationArgs } from 'src/common/pagination/pagination.input';
+import { ArgsType, Field, ID, Int } from '@nestjs/graphql';
+import { IsPositive, IsUUID } from 'class-validator';
 
 @ArgsType()
-export class FindOneArgs extends PaginationArgs {
-  @Field(() => String)
-  title: string;
+export class FindOneArgs {
+  @Field(() => ID)
+  @IsUUID()
+  id: string;
 
-  @Field(() => Int)
-  version: number;
+  @Field(() => Int, { nullable: true })
+  @IsPositive()
+  version?: number;
 }

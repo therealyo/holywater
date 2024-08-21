@@ -12,6 +12,8 @@ import {
 } from './interfaces/content-storage.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { Content, ContentVersion } from './entities/content.entity';
+import { ListVersionsArgs } from './dto/list-versions.args';
+import { FindOneArgs } from './dto/find-one.args';
 
 @Injectable()
 export class ContentService {
@@ -20,21 +22,22 @@ export class ContentService {
     @Inject(CONTENT_STORAGE) private readonly contentStorage: ContentStorage,
   ) {}
 
-  async findVersions(id: string): Promise<ContentVersion[]> {
-    return this.metadataStorage.findVersions(id);
+  async findVersions(args: ListVersionsArgs): Promise<ContentVersion[]> {
+    return this.metadataStorage.findVersions(args.id, args.limit, args.skip);
   }
 
-  async findOne(id: string, version: number): Promise<Content> {
+  async findOne(args: FindOneArgs): Promise<Content> {
+    const { id, version } = args;
     const metadata = await this.metadataStorage.findOne(id, version);
     if (!metadata) {
-      throw new Error(`Content with ID ${id} and version ${version} not found`);
+      throw new Error(`Content with ID ${id} not found`);
     }
 
-    const contentUrl = await this.contentStorage.findOne(id, version);
+    const contentUrl = await this.contentStorage.findOne(id, metadata.version);
     return {
       id,
       title: metadata.title,
-      version,
+      version: metadata.version,
       url: contentUrl,
       createdAt: metadata.createdAt,
     };

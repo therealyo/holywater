@@ -1,10 +1,13 @@
 import { ArgsType, Field, Int } from '@nestjs/graphql';
+import { IsPositive } from 'class-validator';
 
 @ArgsType()
 export class PaginationArgs {
   @Field(() => Int)
-  offset: number = 0;
+  @IsPositive()
+  skip: number = 0;
 
   @Field(() => Int)
+  @IsPositive()
   limit: number = 10;
 }
