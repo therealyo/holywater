@@ -14,6 +14,7 @@ import { ListVersionsArgs } from './dto/list-versions.args';
 import { FindOneArgs } from './dto/find-one.args';
 import { ResetContentInput } from './dto/reset-content.input';
 import { File } from 'src/upload/file';
+import { NotFoundError } from 'src/common/errors/not-found.error';
 
 @Injectable()
 export class ContentService {
@@ -30,7 +31,7 @@ export class ContentService {
     const { id, version } = args;
     const metadata = await this.metadataStorage.findOne(id, version);
     if (!metadata) {
-      throw new Error(`Content with ID ${id} not found`);
+      throw new NotFoundError(`Content with ID ${id} not found`);
     }
 
     return {
@@ -47,6 +48,7 @@ export class ContentService {
     const version = 1;
     const createdAt = new Date();
 
+    // We make content upload and metadata save sequentually to ensure that we do not save metadata if content hasn't been saved
     await this.contentStorage.save(id, version, upload);
     await this.metadataStorage.save(id, version, createdAt, title);
 
@@ -62,7 +64,7 @@ export class ContentService {
   async update(id: string, upload: File, title?: string): Promise<Content> {
     const lastVersion = await this.metadataStorage.findOne(id);
 
-    if (!lastVersion) throw new Error('content not found');
+    if (!lastVersion) throw new NotFoundError('content not found');
 
     const newVersion = lastVersion.version + 1;
     const createdAt = new Date();
@@ -75,8 +77,6 @@ export class ContentService {
       title ? title : lastVersion.title,
     );
 
-    console.log(updatedContent);
-
     return {
       id,
       title: updatedContent.title,
@@ -88,18 +88,15 @@ export class ContentService {
 
   async resetVersion(resetContentInput: ResetContentInput): Promise<Content> {
     const { id, version } = resetContentInput;
-    const metadata = await this.metadataStorage.findOne(id, version);
+    const [metadata, content] = await Promise.all([
+      this.metadataStorage.findOne(id, version),
+      this.contentStorage.getOne(id, version),
+    ]);
 
-    if (!metadata) {
-      throw new Error(
-        `No metadata for content found with ID ${id} and version ${version}`,
+    if (!metadata || !content) {
+      throw new NotFoundError(
+        `No for content found with ID ${id} and version ${version}`,
       );
-    }
-
-    const content = await this.contentStorage.getOne(id, version);
-
-    if (!content) {
-      throw new Error(`No content found with ID ${id} and version ${version}`);
     }
 
     const newVersion = await this.update(id, content, metadata.title);
